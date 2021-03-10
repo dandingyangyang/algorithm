@@ -1,7 +1,7 @@
 // 一. 排序算法:从小到大排序
 
 /** 1. 冒泡排序
- * 思路：每次选择当前可比较的数中最大的一个放在最后面
+ * 思路：每次选择当前可比较的数中最大的一个放在最后面，比较相邻位置元素，将队尾的数字先排好
  * 稳定性：稳定
  * @param {*} arr 
  */
@@ -20,7 +20,7 @@ function bubble(arr) {
 }
 
 /** 2. 选择排序
- * 思路：找出当前位置应该放的元素
+ * 思路：固定位置，找出当前位置应该放的元素，将队首元素先排好
  * 稳定性：不稳定 如：58529
  * @param {*} arr 
  */
@@ -39,6 +39,7 @@ function choose(arr) {
 }
 
 /** 3. 插入排序
+ * 思路：保证队列前面内是有序的，每增加一个数据，将新数据和有序队列的队尾最后一个数据比较，若交换位置后，继续和前一个比较，直到找到自己的位置
  * 稳定性：稳定
  * @param {*} arr 
  */
@@ -52,6 +53,20 @@ function insert(arr) {
             position--;
         }
         arr[position] = baseValue;
+    }
+    return arr;
+}
+
+// 下面是自己写的，和上面的区别在于上面的算法少一些赋值操作：上面的算法中对于被比较的对象，只在最后一次赋值
+function insert(arr) {
+    for(let i = 1; i < arr.length; i++) {
+        let position = i;
+        while(position > 0 && arr[position] < arr[position - 1]) {
+            const temp = arr[position];
+            arr[position] = arr[position - 1];
+            arr[position - 1] = temp;
+            position--;
+        }
     }
     return arr;
 }
@@ -170,7 +185,7 @@ function binarySearch(arr, target) {
 }
 
 // 三.1 数组去重
-
+// 数字，字符串，bool，undefined，NaN，null，{}
 var arr = [1, 1, 'true', 'true', true, true, 15, 15, false, false, undefined, undefined, null, null, NaN, NaN, 'NaN', 0, 0, 'a', 'a', {}, {}];
 
 /**
@@ -285,6 +300,7 @@ function depulicate2(arr) {
 // 注意pre.concat 不会改变pre，所以直接return出去，就不用pre = pre.concat([xxx])了
 function flatten1(arr) {
     return arr.reduce((pre, item) => {
+        // 注意concat不会改变原数据
         return pre.concat(Array.isArray(item) ? flatten1(item) : [item]);
     }, []);
 }
