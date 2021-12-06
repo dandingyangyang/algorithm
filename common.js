@@ -1,16 +1,30 @@
+
+/* 
+深度拷贝相关：
+  对象深拷贝：
+    1. JSON.stringify()之后再JSON.parse。
+      此方法仅在原对象包含可序列化值类型且没有任何循环引用时才有效。不可序列化类型值包括：函数，undefined等。Date这种序列化之后只剩时间信息，parse之后丢失了很多信息。具体可以看MDN：https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify
+    2. 递归进行深拷贝
+
+浅拷贝相关：
+  对象浅拷贝
+    1. Object.assign
+    2. ...  拓展运算符
+  数组浅拷贝：
+  1. array.concat()
+  2. array.slice(0)
+*/
+
 // 1. 深拷贝
 function deepCopy1(from) {
   if (typeof from !== 'object') {
     return from;
   }
-  if (from instanceof Array) {
-    return from.slice(0);
-  }
-  let to = {};
-  // 或者用Object.keys直接获取自身的可遍历属性
+  let to = Array.isArray(from) ? [] : {};
+  // 或者用Object.keys直接获取自身的可遍历属性。这里注意如果外层是for...in，内部需要搭配hasOwnProperty才能获取到自身的可遍历属性
   for (let key in from) {
     if (typeof from[key] !== 'object') {
-      // 为什么不直接使用source.hasOwnProperty(source[key])呢？
+      // 为什么不直接使用source.hasOwnProperty(key)呢？
       // 因为JavaScript 并没有保护 hasOwnProperty 属性名，因此某个对象是有可能自己定义了一个hasOwnProperty的属性
       if (Object.prototype.hasOwnProperty.call(source, key)) {
         // 直接to[key]=from[key]只能拿到值，拿不到存取器属性定义
@@ -25,6 +39,20 @@ function deepCopy1(from) {
     }
   }
   return to;
+}
+
+// 直接用object.assign()
+function deepCopy2(obj) {
+  if(typeof obj !== 'object') return obj;
+  let result = Array.isArray(obj) ? [] : {};
+  Object.keys(obj).forEach((key) => {
+      if(typeof obj[key] === 'object') {
+          result[key] = deepCopy(obj[key]);
+      } else {
+          result[key] = obj[key];
+      }
+  });
+  return result;
 }
 
 /** 
@@ -418,8 +446,8 @@ class MyPromise {
     const P = this.constructor;
     return this.then(
       // 不直接使用Promise.resolve而是使用P.resolve 是为了兼容哪些低版本的polyfill，这些polyfill可能不叫Promise，可能叫MyPromise
-      value => P.resolve(callback()).then(() => value),
-      reason => P.resolve(callback()).then(() => { throw reason})
+      value => P.resolve(callback(value)).then(() => value),
+      reason => P.resolve(callback(reason)).then(() => { throw reason})
     );
   }
   static all(arr) {
@@ -503,6 +531,7 @@ function compose(fnArr) {
 // http://muyiy.cn/question/program/88.html
 convert = (list) => {
   const result = [];
+  // 不一定要一步到位，可以先存下id到data的映射
   const obj = list.reduce((res, data) => {
     res[data.id] = data;
     return res;
@@ -572,6 +601,7 @@ function instanceof2(instance, constructor) {
 // setTimeout 实现setInterval
 function setInterval (fn, time) {
   let id = 0;
+  // 其实这里好像需要一进来就执行下 fn();
   function circle() {
     if (id) {
       clearTimeout(id);

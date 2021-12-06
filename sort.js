@@ -1,3 +1,12 @@
+/**
+ * github 地址： https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode%20%E9%A2%98%E8%A7%A3%20-%20%E7%9B%AE%E5%BD%95.md
+ */
+
+/**
+ * 
+ * https://codetop.cc/home
+ */
+
 // 一. 排序算法:从小到大排序
 
 /** 1. 冒泡排序
@@ -104,6 +113,7 @@ function quickSort(arr) {
     const length = arr.length;
     if(length <= 1) return arr;
     const mid = Math.floor(length / 2);
+    // 每次要摘一个出来，否则当最后只有[5,6,4]这种midValue是最大值的时候回出现死循环，每次拆完之后还是整个数组
     const midValue = arr.splice(mid, 1)[0];
     let left = [];
     let right = [];
@@ -171,7 +181,8 @@ function headAjust(elements, pos, len) {
 function binarySearch(arr, target) {
     var end = arr.length - 1;
     var start = 0;
-    while (start < end) {
+    // 【注意】这里要包含等于，否则binarySearch([3,5], 5)就会返回-1
+    while (start <= end) {
         var mid = Math.floor((end + start) / 2);
         if (arr[mid] === target) {
             return mid;
@@ -183,6 +194,15 @@ function binarySearch(arr, target) {
     }
     return -1;
 }
+
+/**
+ * m 计算
+有两种计算中值 m 的方式：
+m = (l + h) / 2
+m = l + (h - l) / 2
+l + h 可能出现加法溢出，也就是说加法的结果大于整型能够表示的范围。但是 l 和 h 都为正数，因此 h - l 不会出现加法溢出问题。所以，最好使用第二种计算法方法。
+*/
+
 
 // 三.1 数组去重
 // 数字，字符串，bool，undefined，NaN，null，{}
@@ -297,7 +317,7 @@ function depulicate2(arr) {
 // 三.2 数组扁平化
 
 // (1)reduce
-// 注意pre.concat 不会改变pre，所以直接return出去，就不用pre = pre.concat([xxx])了
+// 【注意】pre.concat 不会改变pre，所以直接return出去，就不用pre = pre.concat([xxx])了
 function flatten1(arr) {
     return arr.reduce((pre, item) => {
         // 注意concat不会改变原数据
@@ -322,12 +342,13 @@ function flatten4(arr) {
 // 四. 数组Array 相关习题
 
 /**
- * 思路：先看看sort之后会不会有帮助，然后想想双指针
+ * 思路：先看看sort之后会不会有帮助，然后想想双指针，再想想栈
  */
 
 //  洗牌算法:把牌弄乱
 function shuffle1(arr) {
     return arr.sort((a, b) => {
+        // 【注意】：这里不能用Math.random() > 0.5,不能返回boolean，要返回数字
         return Math.random() - 0.5;
     })
 }
@@ -335,8 +356,10 @@ function shuffle2(arr) {
     let n = arr.length;
     let result = [];
     while(n) {
+        // 【注意】0 <= Math.random() < 1
         let index = Math.floor(Math.random() * n);
         n--;
+        //【注意】concat不会改变原数组
         result = result.concat(arr.splice(index, 1));
     }
     return result;
@@ -397,7 +420,7 @@ var threeSum = function(number) {
         }
         let j = i + 1;
         let k = number.length - 1;
-        while(j < k && j <= number.length - 1 && k >= 0) {
+        while(j < k && j <= number.length - 1 && k > i) {
             if(number[i] + number[j] + number[k] === 0) {
                 result.push([number[i], number[j], number[k]]);
                 j++;
@@ -436,6 +459,12 @@ var maxProfit = function (prices) {
  * [7,1,5,3,6,4] =》 5
  * [7,6,4,3,1] =》 0
  */
+
+/* 【注意】这里总结下数组的一些方法要注意点的：
+1. [7,1,5,3,6,4] reduce函数如果传入了第二个参数，就会执行6次，如果不传入第二个参数则只会执行5次
+2. unshift/push 这两个是往数组里面添加元素，返回的是数组的长度
+3. pop/shift 这两个是将数组内元素拿出来，返回的是拿出来的那个元素值
+*/
 var maxProfit = function (prices) {
     if (prices.length <= 1) return 0;
     let diff = 0;
@@ -497,7 +526,7 @@ var productExceptSelf = function (nums) {
 };
 
 /** 
- * 乘积最大子数组(硬算) https://leetcode-cn.com/problems/maximum-product-subarray/
+ * 乘积最大连续子数组(硬算) https://leetcode-cn.com/problems/maximum-product-subarray/
  */
 var maxSubProduct = function (arr) {
     if (arr.length < 1) return;
@@ -518,7 +547,7 @@ var maxSubProduct = function (arr) {
     return max;
 }
 /**
- * 乘积最大子数组(存下最大值和最小值)
+ * 乘积最大连续子数组(存下最大值和最小值)
  * 思路: 前面的数字能保证有最大乘积和最小乘积，则自己当前数字就能算出最大乘积和最小乘积
  */
 var maxSubProduct = function (arr) {
@@ -536,7 +565,7 @@ var maxSubProduct = function (arr) {
 }
 
 /** 
- * 最大子序列和
+ * 最大子序列和：https://leetcode-cn.com/problems/maximum-subarray/
 */
 var maxSubArraySum = function (nums) {
     if (nums.length < 1) return 0;
@@ -552,10 +581,11 @@ var maxSubArraySum = function (nums) {
 }
 
 /**
- * 有序数组从某一个位置翻转，查找目标数字的位置（和二分查找有点像）
+ * 有序数组从某一个位置翻转，查找目标数字的位置（和二分查找有点像）搜索旋转排序数组：https://leetcode-cn.com/problems/search-in-rotated-sorted-array/
  */
+// 写法1
 nums = [4, 5, 6, 7, 0, 1, 2], target = 0
-var search = function (nums, target) {
+var searchInReserse = function (nums, target) {
     var start = 0, end = nums.length;
     return searchIndex(nums, target, start, end);
 };
@@ -584,39 +614,34 @@ function searchIndex(nums, target, start, end) {
     }
     return -1;
 }
-
-
-/**
- * @param {number[]} nums
- * @param {number} target
- * @return {number}
- */
+// 写法2
 var search = function(nums, target) {
-    return find(nums, target, 0, nums.length);
-};
-
-function find(nums, target, start, end) {
-    if((end - start === 1 && nums[start] !== target) || start === end)  return -1;
-    let index = Math.floor((start + end) / 2);
-    if(nums[index] === target) return index;
-    let left = nums.slice(start, index);
-    let right = nums.slice(index + 1, end);
-    if(left[0] <= left[left.length - 1]) {
-        // 左边有序
-        if(left[0] <= target && target <= left[left.length - 1]) {
-            return find(nums, target, start, index);
+    let start = 0;
+    let end = nums.length - 1;
+    while(start <= end) {
+        mid = Math.floor((start + end) / 2);
+        if (nums[mid] === target) {
+            return mid;
+        } else if(nums[start] <= nums[mid - 1] && start < mid) {
+            // 左边有序
+            if (nums[start] <= target && target <= nums[mid - 1]) {
+                end = mid - 1;
+            } else {
+                start = mid + 1;
+            }
+        } else if (nums[mid + 1] <= nums[end] && mid < end) {
+            // 右边有序
+            if (nums[mid + 1] <= target && target <= nums[end]) {
+                start = mid + 1;
+            } else {
+                end = mid - 1;
+            }
         } else {
-            return find(nums, target, index + 1 , end);
-        }
-    } else if(right[0] <= right[right.length - 1]) {
-        // 右边有序
-        if(right[0] <= target && target <= right[right.length - 1]) {
-            return find(nums, target, index + 1, end);
-        } else {
-            return find(nums, target, start, index);
+            return -1;
         }
     }
-}
+    return -1;
+};
 
 /**
  * 移动窗口最大值 https://leetcode-cn.com/problems/hua-dong-chuang-kou-de-zui-da-zhi-lcof/submissions/
@@ -631,7 +656,7 @@ var maxSlidingWindow = function(nums, k) {
 };
 
 /** 
- * 用栈实现括号匹配
+ * 用栈实现括号匹配: https://leetcode-cn.com/problems/valid-parentheses/
 */
 var isValid = function (s) {
     var couple = {
@@ -669,6 +694,40 @@ var dailyTemperatures = function (arr) {
     }
     return result;
 };
+// 使用单调栈的方法
+var dailyTemperatures = function(temperatures) {
+    let stack = [];
+    let result = [];
+    for(let i = 0; i < temperatures.length; i++) {
+        if (!stack.length || temperatures[stack[stack.length - 1]] >= temperatures[i]) {
+            stack.push(i);
+        } else {
+            const index = stack.pop();
+            result[index] = i - index;
+            i--;
+        }
+    }
+    while(stack.length) {
+        result[stack.pop()] = 0;
+    }
+    return result;
+};
+// 用while代替for（i--可以达到和while一致的效果）
+var dailyTemperatures = function(T) {
+    let stack = [];
+    let result = [];
+    for(let i = 0; i < T.length; i++) {
+        while(stack.length && T[i] > T[stack[stack.length - 1]]) {
+            let current = stack.pop();
+            result[current] = i - current;
+        }
+        stack.push(i);
+    }
+    while(stack.length) {
+        result[stack.pop()] = 0;
+    }
+    return result;
+};
 
 /** 
  * 循环数组中比当前元素大的下一个元素 https://leetcode-cn.com/problems/next-greater-element-ii/
@@ -685,6 +744,7 @@ var nextGreaterElements = function (nums) {
             j = i + 1;
             back = false;
         }
+        // 这个地方巧用了当j为nums.length时，nums[j]是undefined，undefined <= nums[i] 返回false
         while (nums[j] <= nums[i]) {
             j++;
             if (j === nums.length && !back) {
@@ -699,6 +759,41 @@ var nextGreaterElements = function (nums) {
         }
     }
     return result;
+};
+
+// 用栈
+var nextGreaterElements = function(nums) {
+    let stack1 = [];
+    let result = [];
+    for(let i = 0; i < nums.length; i++) {
+        if (!stack1.length || nums[stack1[stack1.length - 1]] >= nums[i]) {
+            stack1.push(i);
+        } else {
+            const index = stack1.pop();
+            result[index] = nums[i];
+            i--;
+        }
+    }
+    let stack1Empty = false;
+    for(let j = 0; j < nums.length; j++) {
+        if (stack1.length) {
+            if (nums[j] > nums[stack1[stack1.length - 1]]) {
+                const index = stack1.pop();
+                result[index] = nums[j];
+                j--;
+            }
+        } else {
+            stack1Empty = true;
+            break;
+        }
+    }
+    if (!stack1Empty) {
+        for(let i = 0; i < nums.length; i++) {
+            result[i] = result[i] ?? -1;
+        }
+    }
+    return result;
+    
 };
 
 /** 
@@ -727,13 +822,12 @@ var moveZeroes = function(nums) {
 };
 
 /** https://leetcode-cn.com/problems/reshape-the-matrix/
- * 改造数组
+ * 重塑矩阵
  */
 var matrixReshape = function (nums, r, c) {
     if (r * c !== nums.length * (nums[0] || []).length) {
         return nums;
     }
-    var row = nums.length;
     var col = nums[0].length;
     var result = [];
     var current = 0;
@@ -749,6 +843,7 @@ var matrixReshape = function (nums, r, c) {
 };
 
 /** 
+ * 最长连续序列:https://leetcode-cn.com/problems/max-consecutive-ones/
  * 找出数组中最长的连续 1
 */
 var findMaxConsecutiveOnes = function (nums) {
@@ -769,7 +864,7 @@ var findMaxConsecutiveOnes = function (nums) {
     return max;
 };
 /**
- * 有序矩阵查找
+ * 搜索二维矩阵，矩阵有序:https://leetcode-cn.com/problems/search-a-2d-matrix/
  */
 var searchMatrix = function (matrix, target) {
     if (!matrix || !matrix.length) return false;
@@ -788,7 +883,6 @@ var searchMatrix = function (matrix, target) {
     }
     return false;
 };
-
 
 /** 
  * 有序矩阵的 Kth Element
@@ -884,6 +978,17 @@ function hasCycle(head) {
     }
     return false;
 }
+
+var hasCycle = function(head) {
+    if(!head || !head.next) return false;
+    let slow = head;
+    let fast = head.next;
+    while(fast && fast.next && fast !== slow) {
+        fast = fast.next.next;
+        slow = slow.next;
+    }
+    return fast === slow;
+};
 
 /** 
  * 寻找链表中环的入口节点
@@ -1059,9 +1164,9 @@ var isPalindrome = function (head) {
 }
 
 // 六. 树相关习题
-// 树的类型：
+// 二叉树的类型：
 // 平衡树（左右子树高度差<=1）,
-// 二叉查找树（根节点大于等于左子树所有节点，小于等于右子树所有节点） 二叉查找树中序遍历有序。
+// 二叉查找树（BST）：根节点大于等于左子树所有节点，小于等于右子树所有节点。二叉查找树中序遍历有序.
 
 /** 
  * 求树的高度
@@ -1147,10 +1252,8 @@ var levelOrder = function(root) {
         if(!currentLevelNode.length) {
             values.push(valueOfSingleLevel.slice(0));
             valueOfSingleLevel = [];
-            if (otherLevelNode.length) {
-                currentLevelNode = otherLevelNode.slice(0);
-                otherLevelNode = [];
-            }
+            currentLevelNode = otherLevelNode.slice(0);
+            otherLevelNode = [];
         }
     }
     return values;
@@ -1189,11 +1292,24 @@ function preOrderTraversal(root) {
     }
     return values;
 }
+// preOrderTraversal 和 preOrderTraversal2 一个是将数据塞入尾部，一个是将数据塞入头部
+function preOrderTraversal2(root) {
+    if (!root) return [];
+    let nodes = [root];
+    let values = [];
+    while(nodes.length) {
+        const node = nodes.shift();
+        values.push(node.val);
+        node.right && nodes.unshift(node.right);
+        node.left && nodes.unshift(node.left);
+    }
+    return values;
+}
 
 
 /**
  * 树的遍历: 递归的方法
- * 2.2.1 深度优先遍历----中序遍历
+ * 2.2.1 深度优先遍历----中序遍历----递归的方法
 */
 function midOrderTraversal(root) {
     if(!root) return [];
@@ -1206,51 +1322,6 @@ function travel(root, values) {
     values.push(root.val);
     travel(root.right, values);
 }
-
-// 前序
-function test1(root) {
-    if(!root) return root;
-    let nodes = [root];
-    let values = [];
-    while(nodes.length) {
-        node = nodes.pop();
-        values.push(node.val);
-        node.right && nodes.push(right);
-        node.left && nodes.push(left);
-    }
-}
-// 后序
-function test3() {
-    if (!root) return [];
-    var nodes = [root];
-    var values = [];
-    while(nodes.length) {
-        var node = nodes.pop();
-        values.unshift(node.val);
-        node.left && nodes.push(node.left);
-        node.right && nodes.push(node.right);
-    }
-    return values;
-}
-// 中序
-function test2(root) {
-    if (!root) return [];
-    var nodes = [];
-    var values = [];
-    while (root || nodes.length) {
-        if(root) {
-            nodes.push(root);
-            root = root.left;
-        } else {
-            root = nodes.pop();
-            values.push(root.val);
-            root = root.right;
-        }
-    }
-    return values;
-}
-
-
 
 /**
  * 树的遍历:
@@ -1299,7 +1370,7 @@ function midOrderTraversal(root) {
 
 /**
  * 树的遍历: 递归的方法
- * 2.3.1 深度优先遍历----后序遍历
+ * 2.3.1 深度优先遍历----后序遍历---递归的方法
 */
 function postOrderTraversal(root) {
     if (!root) return [];
@@ -1349,6 +1420,7 @@ function diameterOfBinaryTree(root) {
 /** 
  * 最长同值路径 https://leetcode-cn.com/problems/longest-univalue-path/
 */
+// 【注意】：关于树的递归思路，一般不要想成 根节点-左节点-右节点， 要想成根节点-左子树-右子树
 function longestUnivaluePath(root) {
     var diameter = 0;
     function dfs(root, val) {
@@ -1396,7 +1468,7 @@ var findSecondMinimumValue = function (root) {
 
 
 /**
- * 翻转树
+ * 翻转树:https://leetcode-cn.com/problems/invert-binary-tree/
  * 方法1
  */
 function invertTree(root) {
@@ -1404,6 +1476,16 @@ function invertTree(root) {
     var temp = root.right;
     root.right = invertTree(root.left);
     root.left = invertTree(temp);
+    return root;
+}
+// 自己写的
+function invertTree(root) {
+    if(!root) return root;
+    let temp = root.left;
+    root.left = root.right;
+    root.right = temp;
+    invertTree(root.left);
+    invertTree(root.right);
     return root;
 }
 /**
@@ -1423,7 +1505,7 @@ function invert(root) {
     invertTree(root.right);
 }
 /** 
- * 归并两棵树
+ * 合并二叉树
  */
 var mergeTrees = function (t1, t2) {
     if (!t1 && !t2) return null;
@@ -1440,6 +1522,17 @@ var mergeTrees = function(t1, t2) {
     root.left = mergeTrees(t1.left, t2.left);
     root.right = mergeTrees(t1.right, t2.right);
     return root;
+};
+// 自己写的
+var mergeTrees = function(root1, root2) {
+    if (!root1) return root2;
+    if (!root2) return root1;
+    let node = {
+        val: root1.val + root2.val,
+    }
+    node.left = mergeTrees(root1.left, root2.left);
+    node.right = mergeTrees(root1.right, root2.right);
+    return node;
 };
 
 
@@ -1481,6 +1574,22 @@ function hasPath(root, sum) {
         return hasPath(root.right, sum);
     }
 }
+// 自己写的
+var hasPathSum = function(root, sum) {
+    if (!root) return false;
+    let flag = false;
+    function dfs(root, sum) {
+        if (!root) return;
+        if (!root.left && !root.right && sum === root.val) {
+            flag = true;
+            return;
+        }
+        dfs(root.left, sum - root.val);
+        dfs(root.right, sum - root.val);
+    }
+    dfs(root, sum);
+    return flag;
+};
 
 
 /** 
@@ -1499,25 +1608,48 @@ function pathSumStartWithRoot(root, sum) {
     result += pathSumStartWithRoot(root.left, sum - root.val) + pathSumStartWithRoot(root.right, sum - root.val);
     return result;
 }
+// 自己写的
+function pathSum(root, sum) {
+    let count = 0;
+    // 以某个节点为根遍历得到的数量
+    function dfs(root, sum) {
+        if (!root) return;
+        if (root.val === sum) {
+            count++;
+        }
+        dfs(root.left, sum - root.val);
+        dfs(root.right, sum - root.val);
+    }
+    // 以每个节点为根去执行dfs
+    function travel(root) {
+        if (!root) return;
+        dfs(root, sum);
+        root.left && travel(root.left, sum);
+        root.right && travel(root.right, sum);
+    }
+    travel(root);
+}
 
 /** 
- * 是否是子树
+ * 是否是子树：https://leetcode-cn.com/problems/subtree-of-another-tree/
  * 先判断当前树与目标数是否相等，不相等再看左子树与目标数是否相等，再看右子树与目标数是否相等
 */
 var isSubtree = function(s, t) {
+    // 【注意】这种简便写法
     if(!t || !s) return !s && !t;
-    return isSubTreeOfNode(s, t) || isSubtree(s.left, t) || isSubtree(s.right, t);
+    return isSame(s, t) || isSubtree(s.left, t) || isSubtree(s.right, t);
 };
-function isSubTreeOfNode(s, t) {
+function isSame(s, t) {
+    // 同时为false才行
     if(!t || !s) return !s && !t;
     if(s.val !== t.val) {
         return false;
     }
-    return isSubTreeOfNode(s.left, t.left) && isSubTreeOfNode(s.right, t.right);
+    return isSame(s.left, t.left) && isSame(s.right, t.right);
 }
 
 /** 
- * 树的对称
+ * 树的对称：https://leetcode-cn.com/problems/symmetric-tree/
 */
 var isSymmetric = function (root) {
     if (!root) return true;
@@ -1529,7 +1661,6 @@ function isReversed(root1, root2) {
     if (root1.val !== root2.val) return false;
     return isReversed(root1.left, root2.right) && isReversed(root1.right, root2.left)
 }
-
 /**
  * 二叉树的最小深度：树的根节点到叶子节点的最小路径长度(注意和树的高度不一样)
  * https://leetcode-cn.com/problems/minimum-depth-of-binary-tree/
@@ -1608,7 +1739,7 @@ var sumOfLeftLeaves = function(root) {
 };
 
 /** 
- * 一棵树每层节点的平均数
+ * 一棵树每层节点的平均数：深度遍历
 */
 var averageOfLevels = function (root) {
     var levels = {};
@@ -1627,6 +1758,34 @@ function travelLevel(root, level, levels) {
     travelLevel(root.left, level + 1, levels);
     travelLevel(root.right, level + 1, levels);
 }
+
+// 自己写的，类似层次遍历
+var averageOfLevels = function(root) {
+    let values = [];
+    let currentLevelNodes = [root];
+    let nextLevelNodes = [];
+    let currentLevelValues = [];
+    while(currentLevelNodes.length) {
+        let node = currentLevelNodes.pop();
+        currentLevelValues.push(node.val);
+        node.left && nextLevelNodes.push(node.left);
+        node.right && nextLevelNodes.push(node.right);
+        if (!currentLevelNodes.length) {
+            values.push(currentLevelValues.slice(0));
+            currentLevelValues = [];
+            currentLevelNodes = nextLevelNodes.slice();
+            nextLevelNodes = [];
+        }
+    }
+    return values.reduce((pre, value) => {
+        let sum = 0;
+        for (let i = 0; i < value.length; i++) {
+            sum += value[i];
+        }
+        pre.push(sum / value.length);
+        return pre;
+    }, []);
+};
 
 /**
  * 得到左下角的节点
@@ -1649,9 +1808,8 @@ var findBottomLeftValue = function (root) {
     return obj.value;
 };
 
-
 /** 不会做
- * 修剪二叉查找树 https://leetcode-cn.com/problems/trim-a-binary-search-tree/ 
+ * 修剪二叉搜索树 https://leetcode-cn.com/problems/trim-a-binary-search-tree/ 
 */
 var trimBST = function (root, L, R) {
     if(!root) return root;
@@ -1663,7 +1821,7 @@ var trimBST = function (root, L, R) {
 };
 
 /** https://leetcode-cn.com/problems/kth-smallest-element-in-a-bst/
- * 找出二叉查找树中倒数第k小的数
+ * 找出二叉查找树中第k小的数
  * 不会做
 */
 var kthSmallest = function (root, k) {
@@ -1682,7 +1840,7 @@ var kthSmallest = function (root, k) {
 };
 
 /** https://leetcode-cn.com/problems/convert-bst-to-greater-tree/
- * 把二叉查找树每个节点的值都加上比它大的节点的值
+ * 把二叉搜索树转换为累加树：把二叉查找树每个节点的值都加上比它大的节点的值
  */
 var convertBST = function (root) {
     var sum = 0;
@@ -1730,9 +1888,29 @@ function isAncestor(root, node) {
     return isAncestor(root.left, node) || isAncestor(root.right, node)
 }
 
+/**
+ * 108
+ * 从有序数组中构造二叉查找树
+ */
+
+function sortedArrayToBST(nums) {
+    if (!nums.length) return null;
+    // 很奇怪，这个地方只能用Math.floor，为什么Math.ceil就不行呢
+    const mid = Math.floor(nums.length / 2);
+    const root = new TreeNode(nums[mid]);
+    
+    // subtrees are BSTs as well
+    root.left = sortedArrayToBST(nums.slice(0, mid));
+    root.right = sortedArrayToBST(nums.slice(mid + 1));
+    
+    return root;
+}
+
 // 七. 字符串相关习题
 /**
  * 字符串循环移位
+ * 移动前：”1234567”
+ * 移动后：”5671234”
  * 左移：从左边第n个切断
  * 右移：从右边第n个切断
  */
@@ -1845,6 +2023,8 @@ var isIsomorphic = function(s, t) {
 
 /** 
  * 回文子字符串个数
+ * 647. 回文子串
+ * 回文子串
 */
 var countSubstrings = function (s) {
     let count = 0;
@@ -1853,6 +2033,7 @@ var countSubstrings = function (s) {
         helper(i, i + 1); // 偶数
     }
     function helper(low, high) {
+        // 从中间往两边扩散匹配，不是从两边向中间匹配
         while(low >= 0 && high <= s.length - 1 && s[low] === s[high]) {
             count++;
             low--;
@@ -1864,6 +2045,7 @@ var countSubstrings = function (s) {
 
 /**
  * 判断一个整数是否是回文数
+ * 9.回文数
  * 利用数组
  */
 var isPalindrome = function (x) {
@@ -1895,6 +2077,7 @@ var isPalindrome = function (x) {
     return num === originCount;
 };
 /**
+ * 696. 计数二进制子串
  * 统计二进制字符串中连续 1 和连续 0 数量相同的子字符串个数
  * 自己写的：时间复杂度较高
  */
@@ -1935,14 +2118,27 @@ var countBinarySubstrings = function (s) {
  */
 var countBinarySubstrings = (s) => {
     return s.replace(/10/g, '1,0').replace(/01/g, '0,1').split(',').reduce((res, item, index, arr) => {
-        return index ? res += Math.max(item.length, arr[--index].length) : 0;
+        return index ? res += Math.min(item.length, arr[--index].length) : 0;
     }, 0);
 }
 
 // 八. 算法思想
+
+// 回文字符串常用算法
+// 1.动态规划
+// 2.中心扩散法
+// 3.还有著名的马拉车算法
+
+// leetcode出现的回文字符串的三个题：
+// 1.回文子串的个数
+// 2.最长回文子串
+// 3.最长不连续的回文子串
+
+
 // (1) 双指针
 /**
- *  两数平方和
+ * https://leetcode-cn.com/problems/sum-of-square-numbers/
+ *  633 两数平方和
  */
 var judgeSquareSum = function (c) {
     var i = 0; 
@@ -1961,7 +2157,8 @@ var judgeSquareSum = function (c) {
 };
 
 /**
- * 反转字符串中的元音字符
+ * https://leetcode-cn.com/problems/reverse-vowels-of-a-string/
+ * 345.反转字符串中的元音字母
  */
 var reverseVowels = function (s) {
     var yuanyin = ['a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U'];
@@ -1994,7 +2191,7 @@ var reverseVowels = function (s) {
 };
 
 /**
- * 回文字符串
+ * 680.回文字符串
  * 可以删除一个字符，判断是否能构成回文字符串。
  * 自己写的：性能不行(构造了很多数组和字符串)
  * 别人写的只是在原来的字符串上进行比较，没有构造任何多余的数据结构
@@ -2019,7 +2216,7 @@ var validPalindrome = function (s, deleteCount = 1) {
 /**
  * 回文字符串
  * 可以删除一个字符，判断是否能构成回文字符串。
- * 看别人的
+ * 看别人的  "abca"
  */
 var validPalindrome = (s) => {
     var i = 0;
@@ -2044,7 +2241,41 @@ function isPalindrome(s, i, j) {
     return true;
 }
 
-// (2)贪心思想
+/** leetcode 524
+ * 最长子序列
+ * 通过删除字母匹配到字典里最长单词
+ * 思路：每个dictionary一个指针，s也有一个指针，一起移动
+ * 
+ * 输入: s = "abpcplea", d = ["ale","apple","monkey","plea"]
+ * 输出: "apple"
+ * 
+ */
+ var findLongestWord = function(s, dictionary) {
+    let indexOfS = 0;
+    let indexs = Array(dictionary.length).fill(0);
+    let result = '';
+    while(indexOfS < s.length) {
+        dictionary.forEach((item, index) => {
+            if (s[indexOfS] === item[indexs[index]]) {
+                indexs[index] = indexs[index] + 1;
+            }
+        });
+        indexOfS++;
+    }
+    for(let i = indexs.length - 1; i >= 0; i--) {
+        if (indexs[i] === dictionary[i].length) {
+            if (indexs[i] > result.length) {
+                result = dictionary[i];
+            } else if (indexs[i] === result.length) {
+                result = [dictionary[i], result].sort()[0];
+            }
+        }
+    }
+    return result;
+};
+
+
+// (2)贪心思想：保证每次操作都是局部最优的，并且最后得到的结果是全局最优的。
 /** 
  * 分配饼干
 */
@@ -2069,7 +2300,7 @@ var findContentChildren = function (g, s) {
     return content;
 };
 /** 
- * 不重叠的区间个数
+ * 435.无重叠区间
 */
 var eraseOverlapIntervals = function (intervals) {
     if (!intervals.length || !intervals[0].length) return 0;
@@ -2087,7 +2318,7 @@ var eraseOverlapIntervals = function (intervals) {
 };
 
 /** 
- * 投飞镖刺破气球
+ * 452.投飞镖刺破气球
  * 自己写的：有的case没通过
 */
 var findMinArrowShots = function (s) {
@@ -2148,7 +2379,7 @@ var findMinArrowShots = function (s) {
 }
 
 /**
- * 根据身高和序号重组队列
+ * 406.根据身高重建队列
  */
 var reconstructQueue = function (people) {
     if (!people.length || !people[0].length || people.length == 1) return people;
@@ -2161,7 +2392,7 @@ var reconstructQueue = function (people) {
 };
 
 /** 
- * 种植花朵
+ * 605.种植花朵
 */
 var canPlaceFlowers = function (flowerbed, n) {
     var count = 0;
@@ -2178,7 +2409,7 @@ var canPlaceFlowers = function (flowerbed, n) {
 };
 
 /**
- * 判断是否为子序列
+ * 392.判断是否为子序列
  * s = "abc", t = "ahbgdc" ==> true
  * s = "axc", t = "ahbgdc" ===> false
  * isSubsequence1是我自己的写的，利用的是indexOf。如果t里面有重复字符就会出问题。
@@ -2212,7 +2443,7 @@ var isSubsequence = function (s, t) {
     return true;
 };
 /** 
- * 修改一个数成为非递减数组
+ * 665.修改一个数成为非递减数组
 */
 var checkPossibility = function (nums) {
     var count = 0;
@@ -2228,9 +2459,545 @@ var checkPossibility = function (nums) {
     return count < 2;
 };
 
-// (3) 动态规划
+// （3）二分查找：做这种题型非常需要注意边界条件，比如while（start < end) 是否有=，另外指针移动条件是否带有=
+
+/**
+ * 1. 基础二分查找  与第(二)节相呼应
+ */
+ function binarySearch(arr, target) {
+    var end = arr.length - 1;
+    var start = 0;
+    while (start < end) {
+        var mid = Math.floor((end + start) / 2);
+        if (arr[mid] === target) {
+            return mid;
+        } else if (arr[mid] < target) {
+            start = mid + 1;
+        } else {
+            end = mid - 1;
+        }
+    }
+    return -1;
+}
+/**
+ * 2. 二分查找的变体: 返回的是start（有时候是end）不是-1。
+ * 
+ * function binarySearch(nums, target) {
+    let start = 0, end = nums.length;
+    while (start < end) {
+        int mid = start + (end - start) / 2;
+        if (nums[mid] >= target) {
+            end = mid;
+        } else {
+            start = mid + 1;
+        }
+    }
+    return start;
+}
+ *
+
+基础二分查找和变体二分查找解决的不是一种问题：
+基础二分查找主要是寻找nums里面和target相等的元素；变体二分查找寻找的是nums里符合某个条件的元素，寻找的是while循环结束时对应的start和end值，比如[69]: 求开方，nextGreatestLetter，[278]第一个错误的版本。
+ */
+// [69]: 求开方
+function mySqrt(x) {
+    if (x <= 1) return x;
+    let start = 0;
+    let end = x;
+    while(start <= end) {
+        let mid = Math.floor(start + (end - start) / 2);
+        let sqrt = x / mid;
+        if (sqrt === mid) {
+            return mid;
+        } else if (sqrt > mid) {
+            start = mid + 1
+        } else {
+            end = mid - 1;
+        }
+    }
+    return end;
+}
+// [744] 寻找比目标字母大的最小字母
+// 自己写的
+var nextGreatestLetter = function(letters, target) {
+    let arr = letters.concat(target);
+    arr.sort();
+    let index = arr.lastIndexOf(target);
+    return index === arr.length - 1 ? arr[0] : arr[index + 1];
+};
+
+var nextGreatestLetter = function(letters, target) {
+    if (letters[0] > target || target >= letters[letters.length - 1]) return letters[0]
+    let s = 0
+    let e = letters.length - 1
+    while (s < e) {
+        // Math.trunc() 的执行逻辑很简单，仅仅是删除掉数字的小数部分和小数点，不管参数是正数还是负数。
+        let mid = Math.trunc((e + s) / 2)
+        if (target < letters[mid]) {
+            e = mid
+        } else {
+            s = mid + 1
+        }
+    }
+    return letters[s]
+};
+
+// [540]有序数组的 Single Element
+// 自己写的（思路和二分查找不同）
+function singleNonDuplicate(nums) {
+    if (nums.length === 1) return nums;
+    let flag = false;
+    for(let index = 0; index < nums.length - 1; index++) {
+        const item = nums[index];
+        if (!flag && item === nums[index + 1]) {
+            flag = true;
+        } else if (flag && item === nums[index - 1]){
+            flag = false;
+        } else if (!flag && item !== nums[index + 1]) {
+            return nums[index];
+        }
+    }
+    if (flag) {
+        if (nums[nums.length - 1] === nums[nums.length - 2]) {
+            return null
+        } else {
+            return nums[nums.length - 2];
+        }
+    }
+    return nums[nums.length - 1]
+}
+
+// [278]第一个错误的版本
+var solution = function(isBadVersion) {
+    /**
+     * @param {integer} n Total versions
+     * @return {integer} The first bad version
+     */
+    return function(n) {
+        let start  = 1;
+        let end = n;
+        while(start <= end) {
+            let mid = Math.floor(start + (end - start) / 2);
+            if (isBadVersion(mid)) {
+                end = mid - 1;
+            } else {
+                start = mid + 1;
+            }
+        }
+        return start;
+    };
+};
+
+// 【153】旋转数组的最小数字
+// 类似于searchInReserse--->旋转数组中查找某个值，findMin---> 旋转数组中找到最小的值
+function findMin(nums) {
+    let start = 0;
+    let end = nums.length - 1;
+    while(start < end) {
+        let mid = Math.floor(start + (end - start) / 2);
+        if (nums[mid] <= nums[end]) {
+            end = mid;
+        } else {
+            start = mid + 1;
+        }
+    }
+    return nums[start];
+}
+
+// [34] 在排序数组中查找元素的第一个和最后一个位置,复制的别人的。思路是利用两次二分查找找到起始指针位置和结束指针位置
+var searchRange = function (nums, target) {
+    // initiate binary search
+    let l = 0, r = nums.length - 1;
+
+    // search for the first appearance index of target
+    while (l < r) {
+        let mid = Math.floor((l + r) / 2);
+
+        // try to push the array to the left smaller half
+        // that's why even when nums[mid] == target, we still set r = mid
+        nums[mid] >= target ? r = mid : l = mid + 1;
+    }
+
+    // after the first while loop, the small index l should already be the first appearance index of target
+    // otherwise, target is not in the array and [-1, -1] should be returned
+    if (nums[l] !== target) return [-1, -1];
+
+    // now we have the first appearance index of target, and it is the small index l
+    // we can store it to a new variable for further usage
+    let start = l;
+
+    // since both of the indices were changed (both of them are at the first appearance index of target)
+    // we need to reset the big index to the end of the array to do the second binary search
+    // to find the last appearance index of the target
+    r = nums.length - 1;
+
+    // search for the last appearance index of the target
+    while (l < r) {
+        let mid = Math.floor((l + r) / 2);
+
+        // nums[mid] <= target? l = mid : r = mid -1
+        // the above will not work as it will run into infinite loop
+        nums[mid] <= target ? l = mid + 1 : r = mid;
+    }
+
+    // after the second while loop, now l == nums.length - 1
+    // now there are 2 conditions: target is also appeared at the last index of the array, or not
+    // store the last appearance index of target to another variable
+    let end = nums[l] === target ? l : l - 1;
+
+    // finally return the two indices into an array
+    return [start, end];
+};
+
+// (4)分治：一般是求总的数量，或者最多有几种方法，经常使用的是递归解决
+// 【241】为运算表达式设计优先级
+var diffWaysToCompute = function(expression) {
+    let result = [];
+    for(let i = 0; i < expression.length; i++) {
+        if(['+', '-', '*'].includes(expression[i])) {
+            let left = diffWaysToCompute(expression.slice(0, i));
+            let right = diffWaysToCompute(expression.slice(i + 1));
+            for(let j of left) {
+                for(let k of right) {
+                    if (expression[i] === '+') {
+                        result.push(j + k);
+                    }
+                    if (expression[i] === '-') {
+                        result.push(j - k);
+                    }
+                    if (expression[i] === '*') {
+                        result.push(j * k);
+                    }
+                }
+            }
+        }
+    }
+    return result.length ? result : [Number(expression)];
+};
+
+// 95. 不同的二叉搜索树 II
+// 给定一个整数 n，生成所有由 1 ... n 为节点所组成的 二叉搜索树
+var generateTrees = function(n) {
+    function generateNode(arr) {
+        let result = [];
+        for(let i = 0; i < arr.length; i++) {
+            let val = arr[i];
+            let rightArr = arr.slice(i + 1);
+            let leftArr = arr.slice(0, i);
+            const leftNodes = generateNode(leftArr);
+            const rightNodes = generateNode(rightArr);
+            if (rightNodes.length && leftNodes.length) {
+                 for(leftNode of leftNodes) {
+                    for(rightNode of rightNodes) {
+                        let node = new TreeNode(val);
+                        node.left = leftNode;
+                        node.right = rightNode;
+                        result.push(node);
+                    }
+                }
+            } else if(rightNodes.length) {
+                for(rightNode of rightNodes) {
+                    let node = new TreeNode(val);
+                    node.left = null;
+                    node.right = rightNode;
+                    result.push(node);
+                }
+            } else if(leftNodes.length) {
+                for(leftNode of leftNodes) {
+                    let node = new TreeNode(val);
+                    node.right = null;
+                    node.left = leftNode;
+                    result.push(node);
+                }
+            } else {
+                let node = new TreeNode(val);
+                result.push(node);
+            }
+        }
+        return result;
+    }
+    // 这里使用 n = Array(n).map((item, index) => (index + 1)); 不行，必须解构一下
+    n = [...Array(n)].map((item, index) => (index + 1));
+    return generateNode(n);
+};
+
+// 上面的4个if...else 其实是为了覆盖rightNodes或者leftNodes长度为0的情况，这是可以用返回[null]，避免长度为0，简化代码
+var generateTrees2 = function(n) {
+    function generateNode(arr) {
+        if(!arr.length) return [null]; // 注意这一行
+        let result = [];
+        for(let i = 0; i < arr.length; i++) {
+            let rightArr = arr.slice(i + 1);
+            let leftArr = arr.slice(0, i);
+            const leftNodes = generateNode(leftArr);
+            const rightNodes = generateNode(rightArr);
+            for(leftNode of leftNodes) {
+                for(rightNode of rightNodes) {
+                    let node = new TreeNode(arr[i]);
+                    node.left = leftNode;
+                    node.right = rightNode;
+                    result.push(node);
+                }
+            }
+        }
+        return result;
+    }
+    n = [...Array(n)].map((item, index) => (index + 1));
+    return generateNode(n);
+};
+
+
+// 在generateTrees2的基础上还可以将递归的结果存储下来，进一步优化。这是别人写的
+var generateTrees = function(n) {
+    const memo = new Map();
+    
+    function buildTree(arr) {
+        if(!arr.length) return [null];
+        if(memo.has(arr.join())) return memo.get(arr.join());
+        const result = [];
+        
+        for(let i = 0; i < arr.length; i++) {
+            const left = buildTree(arr.slice(0, i));
+            const right = buildTree(arr.slice(i+1));
+            
+            for(let curLeft of left) {
+                for(let curRight of right) {
+                    const tree = new TreeNode(arr[i]);
+                    tree.left = curLeft;
+                    tree.right = curRight;
+                    result.push(tree);
+                }
+            }
+        }
+        memo.set(arr.join(), result);
+        return result;
+    }
+    return buildTree([...Array(n)].map((_, i) => i+1));
+};
+
+// (5) 搜索
+// [1091]. 二进制矩阵中的最短路径
+/**
+ * 
+BFS总体的套路是：
+1.定义一个队列，将第一个位置push进去；
+2.确定搜索方向；
+3.循环，直到队列为空
+ */
+var shortestPathBinaryMatrix = function (grid) {
+    // 缓存矩阵的终点位置
+    const m = grid.length - 1;
+    const n = grid[0].length - 1;
+  
+    // 当起点和终点为1时，必然无法到达终点
+    if (grid[0][0] === 1 || grid[m][n] === 1) {
+      return -1;
+    }
+  
+    // 如果矩阵只有1个点，且为0，路径为1
+    if (m === 0 && n === 0 && grid[0][0] === 0) {
+      return 1;
+    }
+  
+    let queue = [[0, 0]]; // 使用队列进行BFS搜索
+    let level = 1; // 缓存路径长度，起点的长度为1
+    // 可以向四周所有方向行走，缓存8个方向
+    const direction = [
+      [-1, 1], // 右上
+      [0, 1], // 右
+      [1, 1], // 右下
+      [1, 0], // 下
+      [1, -1], // 左下
+      [-1, 0], // 上
+      [0, -1], // 左
+      [-1, -1], // 左上
+    ];
+  
+    // 如果队列中有值，则继续搜索
+    while (queue.length) {
+      // 缓存当前层的节点数量
+      let queueLength = queue.length;
+  
+      // 每次只遍历当前一层的节点
+      while (--queueLength >= 0) {
+        // 出队一个坐标，计算它可以行走的下一步位置
+        const [x, y] = queue.shift();
+  
+        for (let i = 0; i < direction.length; i++) {
+          // 下一步可以向四周行走，计算出相应新坐标
+          const newX = x + direction[i][0];
+          const newY = y + direction[i][1];
+  
+          // 如果新坐标超出网格，或者被标记为1，表示无法行走，则跳过
+          if (
+            newX < 0 ||
+            newY < 0 ||
+            newX > m ||
+            newY > n ||
+            grid[newX][newY] === 1
+          ) {
+            continue;
+          }
+  
+          // 如果新坐标是终点，表示找到路径，返回长度即可
+          if (newX === m && newY === n) {
+            return level + 1;
+          }
+          // 将走过的位置标记为1，避免重复行走
+          grid[newX][newY] = 1;
+          // 将下一步的坐标存入队列，用于下一层循环
+          queue.push([newX, newY]);
+        }
+      }
+  
+      level++; // 每向前走一层，将步数加1
+    }
+  
+    return -1;
+  };
+
+
+// 127. 单词接龙: BFS遍历
+var ladderLength = function(beginWord, endWord, wordList) {
+    if(beginWord === endWord) return level;
+    if (!wordList.includes(endWord)) return 0;
+
+    let quene = [[beginWord, 1]];
+
+    while(quene.length) {
+        let [node, level] = quene.shift();
+        for(let i = 0; i < node.length; i++) {
+            for(let j = 'a'.charCodeAt(0); j<= 'z'.charCodeAt(0); j++) {
+                let str = node.slice(0, i) + String.fromCharCode(j) + node.slice(i+1);
+                const index = wordList.indexOf(str);
+                if(index > -1) {
+                    if(str === endWord) {
+                        return level + 1;
+                    } else {
+                        quene.push([str, level + 1]);
+                        wordList.splice(index, 1);
+                    }
+                }
+            }
+        }
+    }
+    return 0;
+};
+
+// DFS
+// [695] 查找最大的连通面积
+var maxAreaOfIsland = function(grid) {
+    let maxCount = 0;
+    let row = grid.length;
+    let col = grid[0].length;
+    for(let i = 0; i < row; i++) {
+        for(let j = 0; j < col; j++) {
+            maxCount = Math.max(maxCount, dfs(grid, i, j))
+        }
+    }
+    return maxCount;
+};
+let directions = [
+    [1, 0],
+    [-1, 0],
+    [0, 1],
+    [0, -1]
+]
+function dfs(grid, i, j) {
+    if(i < 0 || j < 0 || i >= grid.length || j >= grid[0].length || grid[i][j] === 0) return 0;
+    let count = 1;
+    grid[i][j] = 0;
+    for(let index = 0; index < directions.length; index++) {
+        let newRow = i + directions[index][0];
+        let newCol = j + directions[index][1];
+        count = count + dfs(grid, newRow, newCol);
+    }
+    return count;
+}
+
+// [200]. 岛屿数量
+var numIslands = function(grid) {
+    let count = 0;
+    for(let i = 0; i < grid.length; i++) {
+        for(let j = 0; j < grid[0].length; j++) {
+            if (grid[i][j] === '1') {
+                count++;
+                dfs(grid, i, j);
+            }
+        }
+    }
+    return count;
+};
+
+let directions = [
+    [1, 0],
+    [-1, 0],
+    [0, 1],
+    [0, -1]
+]
+
+function dfs(grid, i, j) {
+    if(i < 0 || j < 0 || i >= grid.length || j >= grid[0].length || grid[i][j] === '0') return;
+    grid[i][j] = '0';
+    for(let direc of directions) {
+        dfs(grid, direc[0] + i, direc[1] + j);
+    }
+}
+
+// 417. 能到达的太平洋和大西洋的区域
+var pacificAtlantic = function(heights) {
+    if(!heights || !heights.length) return [];
+    let result = [];
+    let row = heights.length;
+    let col = heights[0].length;
+
+    let leftTop = [...Array(row)].map(item => Array(col));
+    let rightBottom = [...Array(row)].map(item => Array(col));
+
+    for(let i = 0; i < row; i++) {
+        dfs(i, 0, leftTop);
+        dfs(i, col - 1, rightBottom);
+    }
+
+    for(let j = 0; j < col; j++) {
+        dfs(0, j, leftTop);
+        dfs(row - 1, j, rightBottom);
+    }
+
+    for(let i = 0; i < row; i++) {
+        for(let j = 0; j < col; j++) {
+            if (leftTop[i][j] && rightBottom[i][j]) {
+                result.push([i, j]);
+            }
+        }
+    }
+
+    
+
+    function dfs(i, j, canReach) {
+        if (canReach[i][j]) return;
+        canReach[i][j] = 1;
+        let directions = [
+            [1, 0],
+            [-1, 0],
+            [0, -1],
+            [0, 1]
+        ];
+        for(let dire of directions) {
+            let newX = dire[0] + i;
+            let newY = dire[1] + j;
+            if (newX < 0 || newY < 0 || newX >= heights.length || newY >= heights[0].length || heights[i][j] > heights[newX][newY]) {
+                continue;
+            }
+            dfs(newX, newY, canReach);
+        }
+    }
+    return result;
+};
+
+// (6) 动态规划： 参考知乎文章https://zhuanlan.zhihu.com/p/91582909
 // 动态规划有三个核心元素：
-// 1.最优子结构
+// 1.最优子结构:局部最优解能决定全局最优解,问题能够分解成子问题来解决.其实我理解就是设计dp的含义
 // 2.边界
 // 3.状态转移方程
 
@@ -2267,6 +3034,7 @@ var climbStairs = function (s) {
     return current;
 }
 /**
+ * 198
  * 抢劫一排住户，但是不能抢邻近的住户，求最大抢劫量
  * 自己写的：复杂度太高（和上面树抢劫一个做法）
  */
@@ -2337,6 +3105,27 @@ var _rob = function(nums, start, end) {
     return current;
 }
 
+/**
+ * 按平方数来分割整数
+ * 279
+ * dp[i] = dp[i - x] + 1
+ * 1 <= x <= i, x属于1，4，9，16 或者可以把条件设置成 下面代码中的 i-j*j >= 0
+ */
+ var numSquares = function(n) {
+    let dp = Array(n + 1);
+    dp[0] = 0;
+    dp[1] = 1;
+    for(let i = 2; i < n + 1; i++) {
+        let min = i; // 1 + 1 + 1...
+        for(let j = 1; i - j * j >= 0; j++) {
+            min = Math.min(min, dp[i - j * j] + 1);
+        }
+        dp[i] = min;
+    }
+    return dp[n];
+};
+
+
 /** 
  * 矩阵的最小路径和
 */
@@ -2384,6 +3173,13 @@ var uniquePaths = function(m,n) {
 // 动态规划 之  背包客
 // 原理参考地址  https://blog.csdn.net/mu399/article/details/7722810  
 // 代码参考地址  https://segmentfault.com/a/1190000012829866
+
+// f[i,j] = Max{ f[i-1,j-Wi]+Pi( j >= Wi ),  f[i-1,j] }
+/*
+f[i,j]表示在前i件物品中选择若干件放在承重为 j 的背包中，可以取得的最大价值。
+Pi表示第i件物品的价值，Wi表示第i件物品的重量
+决策：为了背包中物品总价值最大化，第 i件物品应该放入背包中吗 ？
+*/
 
 function bag(weights, values, W) {
     const n = weights.length;
